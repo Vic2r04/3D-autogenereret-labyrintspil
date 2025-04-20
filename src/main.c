@@ -37,9 +37,10 @@ bool is_done() {
 }
 
 void print_maze() {
+  printf("\n\n\n");
   printf("+");
   for (int col = 0; col < MAZEWIDTH; col++) {
-    printf("-+");
+    printf("--+");
   }
   printf("\n");
 
@@ -48,9 +49,9 @@ void print_maze() {
     for (int col = 0; col < MAZEWIDTH; col++) {
       cell *current = &maze[row][col];
       if (current->visited) {
-        printf(" ");
+        printf("  ");
       } else {
-        printf("#");
+        printf("##");
       }
       if (current->right) {
         printf("|");
@@ -64,9 +65,9 @@ void print_maze() {
     for (int col = 0; col < MAZEWIDTH; col++) {
       cell *current = &maze[row][col];
       if (current->lower) {
-        printf("-+");
+        printf("--+");
       } else {
-        printf(" +");
+        printf("  +");
       }
     }
     printf("\n");
@@ -202,7 +203,7 @@ int main() {
 
   while (!is_done()) {
     print_maze();
-    usleep(100000);
+    usleep(20000);
     randomDir(dir, current);
 
     current = move(current, dir);
