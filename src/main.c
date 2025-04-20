@@ -66,9 +66,12 @@ struct node {
   struct node *prev;
 };
 
-signed char *randomDir(struct node *current) {
-  signed char *dir = (signed char *)malloc(sizeof(signed char) * 2);
+void testrandomDir(signed char *dir, struct node *current) {
+  dir[0] = 0;
+  dir[1] = 1;
+}
 
+void randomDir(signed char *dir, struct node *current) {
   char rn;
   while (true) {
     rn = rand() % 4;
@@ -100,8 +103,6 @@ signed char *randomDir(struct node *current) {
       }
     }
   }
-
-  return dir;
 }
 
 void freeStack(struct node *tip) {
@@ -138,16 +139,20 @@ struct node *move(struct node *current, signed char dir[2]) {
 
 int main() {
   srand(time(0));
+
   init_maze();
+
   int input;
-  signed char *dir = NULL;
+  signed char dir[2];
+
   struct node *current = (struct node *)calloc(1, sizeof(struct node));
   current->row = 0;
   current->col = 2;
   maze[current->row][current->col].visited = true;
+
   while (1) {
     print_maze();
-    dir = randomDir(current);
+    randomDir(dir, current);
 
     scanf("%d", &input);
     if (input == 1) {
@@ -157,6 +162,5 @@ int main() {
     current = move(current, dir);
   }
   freeStack(current);
-  free(dir);
   return 0;
 }
