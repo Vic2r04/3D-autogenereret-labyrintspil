@@ -1,12 +1,12 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define MAZEWIDTH 20
-#define MAZEHEIGHT 10
+#include <time.h>
+#define MAZEWIDTH 5
+#define MAZEHEIGHT 3
 
 typedef struct {
   bool visited;
-  bool tip;
   bool lower;
   bool right;
 } cell;
@@ -35,11 +35,9 @@ void print_maze() {
     for (int col = 0; col < MAZEWIDTH; col++) {
       cell *current = &maze[row][col];
       if (current->visited) {
-        printf("#");
-      } else if (current->tip) {
-        printf("@");
-      } else {
         printf(" ");
+      } else {
+        printf("#");
       }
       if (current->right) {
         printf("|");
@@ -68,9 +66,46 @@ struct node {
   struct node *prev;
 };
 
+signed char *randomDir(struct node *current) {
+  signed char *dir = (signed char *)malloc(sizeof(signed char) * 2);
+
+  char rn;
+  while (true) {
+    rn = rand() % 4;
+    switch (rn) {
+    case 0:
+      dir[0] = 1;
+      dir[1] = 0;
+      break;
+    case 1:
+      dir[0] = 0;
+      dir[1] = 1;
+      break;
+    case 2:
+      dir[0] = -1;
+      dir[1] = 0;
+      break;
+    case 3:
+      dir[0] = 0;
+      dir[1] = -1;
+      break;
+    }
+    struct node *prev = current->prev;
+    if (prev == NULL ||
+        !maze[current->row + dir[0]][current->col + dir[1]].visited) {
+
+      if (current->row + dir[0] < MAZEHEIGHT && current->row + dir[0] >= 0 &&
+          current->col + dir[1] < MAZEWIDTH && current->col + dir[1] >= 0) {
+        break;
+      }
+    }
+  }
+
+  return dir;
+}
+
 void freeStack(struct node *tip) {
   if (tip->prev == NULL) {
-    printf("freeing node at [%d, %d]\n", tip->col, tip->row);
     free(tip);
     return;
   }
@@ -86,29 +121,42 @@ struct node *move(struct node *current, signed char dir[2]) {
 
   next->prev = current;
 
-  maze[current->row][current->col].right = false;
-  maze[next->row][next->col].tip = true;
+  if (dir[0] == 1) {
+    maze[current->row][current->col].lower = false;
+  } else if (dir[0] == -1) {
+    maze[current->row - 1][current->col].lower = false;
+  } else if (dir[1] == 1) {
+    maze[current->row][current->col].right = false;
+  } else if (dir[1] == -1) {
+    maze[current->row][current->col - 1].right = false;
+  }
+
   maze[next->row][next->col].visited = true;
 
   return next;
 }
 
 int main() {
+  srand(time(0));
   init_maze();
   int input;
+  signed char *dir = NULL;
   struct node *current = (struct node *)calloc(1, sizeof(struct node));
-  maze[current->row][current->col].tip = true;
+  current->row = 0;
+  current->col = 2;
   maze[current->row][current->col].visited = true;
   while (1) {
     print_maze();
+    dir = randomDir(current);
 
     scanf("%d", &input);
     if (input == 1) {
       break;
     }
-    signed char dir[] = {0, 1};
+
     current = move(current, dir);
   }
   freeStack(current);
+  free(dir);
   return 0;
 }
