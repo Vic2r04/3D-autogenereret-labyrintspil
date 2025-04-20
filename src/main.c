@@ -5,36 +5,44 @@
 
 typedef struct node {
   bool visited;
+  bool tip;
   bool lower;
   bool right;
 } node;
 
 node maze[MAZEHEIGHT][MAZEWIDTH];
 
+void init_maze() {
+  for (int row = 0; row < MAZEHEIGHT; row++) {
+    for (int col = 0; col < MAZEWIDTH; col++) {
+      node *current = &maze[row][col];
+      current->lower = 1;
+      current->right = 1;
+    }
+  }
+}
+
 void print_maze() {
 
   printf("Current state of the maze:\n");
-  printf("|");
-  for (int col = 0; col < MAZEWIDTH; col++) {
-    if (col != MAZEWIDTH - 1) {
-      printf("--");
-    } else {
-      printf("-");
-    }
-  }
 
-  printf("|");
+  printf("+");
+  for (int col = 0; col < MAZEWIDTH; col++) {
+    printf("-+");
+  }
   printf("\n");
+
   for (int row = 0; row < MAZEHEIGHT; row++) {
     printf("|");
     for (int col = 0; col < MAZEWIDTH; col++) {
       node *current = &maze[row][col];
-      if (!current->visited) {
-        printf(" ");
-      } else {
+      if (current->visited) {
         printf("#");
+      } else if (current->tip) {
+        printf("@");
+      } else {
+        printf(" ");
       }
-      current->right = 1;
       if (current->right) {
         printf("|");
       } else {
@@ -43,25 +51,21 @@ void print_maze() {
     }
 
     printf("\n");
-    printf("|");
+    printf("+");
     for (int col = 0; col < MAZEWIDTH; col++) {
       node *current = &maze[row][col];
-      current->lower = 1;
       if (current->lower) {
-        printf("-");
+        printf("-+");
       } else {
-        printf(" ");
-      }
-      if (col != MAZEWIDTH - 1) {
-        printf("-");
+        printf(" +");
       }
     }
-    printf("|");
     printf("\n");
   }
 }
 
 int main() {
+  init_maze();
   print_maze();
   return 0;
 }
