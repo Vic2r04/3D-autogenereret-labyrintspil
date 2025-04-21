@@ -1,33 +1,26 @@
-#include <stdbool.h>
+#include "headers/maze.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#define MAZEWIDTH 50
-#define MAZEHEIGHT 20
 
-typedef struct {
-  bool visited;
-  bool tip;
-  bool lower;
-  bool right;
-} cell;
+int maze_width = 20;
+int maze_height = 10;
 
-cell maze[MAZEHEIGHT][MAZEWIDTH];
-
-void init_maze() {
-  for (int row = 0; row < MAZEHEIGHT; row++) {
-    for (int col = 0; col < MAZEWIDTH; col++) {
+void initMaze(cell maze[maze_height][maze_width]) {
+  for (int row = 0; row < maze_height; row++) {
+    for (int col = 0; col < maze_width; col++) {
       cell *current = &maze[row][col];
+      current->visited = 0;
       current->lower = 1;
       current->right = 1;
     }
   }
 }
 
-bool is_done() {
-  for (int row = 0; row < MAZEHEIGHT; row++) {
-    for (int col = 0; col < MAZEWIDTH; col++) {
+bool isDone(cell maze[maze_height][maze_width]) {
+  for (int row = 0; row < maze_height; row++) {
+    for (int col = 0; col < maze_width; col++) {
       if (!maze[row][col].visited) {
         return false;
       }
@@ -36,17 +29,17 @@ bool is_done() {
   return true;
 }
 
-void print_maze() {
+void printMaze(cell maze[maze_height][maze_width]) {
   printf("\n\n\n");
   printf("+");
-  for (int col = 0; col < MAZEWIDTH; col++) {
+  for (int col = 0; col < maze_width; col++) {
     printf("--+");
   }
   printf("\n");
 
-  for (int row = 0; row < MAZEHEIGHT; row++) {
+  for (int row = 0; row < maze_height; row++) {
     printf("|");
-    for (int col = 0; col < MAZEWIDTH; col++) {
+    for (int col = 0; col < maze_width; col++) {
       cell *current = &maze[row][col];
       if (current->visited) {
         printf("  ");
@@ -62,7 +55,7 @@ void print_maze() {
 
     printf("\n");
     printf("+");
-    for (int col = 0; col < MAZEWIDTH; col++) {
+    for (int col = 0; col < maze_width; col++) {
       cell *current = &maze[row][col];
       if (current->lower) {
         printf("--+");
@@ -80,7 +73,8 @@ struct node {
   struct node *prev;
 };
 
-void randomDir(signed char *dir, struct node *current) {
+void randomDir(cell maze[maze_height][maze_width], signed char *dir,
+               struct node *current) {
   char rn;
   while (true) {
     rn = rand() % 4;
@@ -106,15 +100,15 @@ void randomDir(signed char *dir, struct node *current) {
     if (prev == NULL ||
         !maze[current->row + dir[0]][current->col + dir[1]].visited) {
 
-      if (current->row + dir[0] < MAZEHEIGHT && current->row + dir[0] >= 0 &&
-          current->col + dir[1] < MAZEWIDTH && current->col + dir[1] >= 0) {
+      if (current->row + dir[0] < maze_height && current->row + dir[0] >= 0 &&
+          current->col + dir[1] < maze_width && current->col + dir[1] >= 0) {
         break;
       }
     }
   }
 }
 
-int countNeighbours(struct node *current) {
+int countNeighbours(cell maze[maze_height][maze_width], struct node *current) {
   int neighbours = 0;
 
   if (current->row - 1 >= 0) {
@@ -123,7 +117,7 @@ int countNeighbours(struct node *current) {
       neighbours++;
     }
   }
-  if (current->row + 1 < MAZEHEIGHT) {
+  if (current->row + 1 < maze_height) {
     cell neighbour = maze[current->row + 1][current->col];
     if (!neighbour.visited) {
       neighbours++;
@@ -135,7 +129,7 @@ int countNeighbours(struct node *current) {
       neighbours++;
     }
   }
-  if (current->col + 1 < MAZEWIDTH) {
+  if (current->col + 1 < maze_width) {
     cell neighbour = maze[current->row][current->col + 1];
     if (!neighbour.visited) {
       neighbours++;
@@ -144,9 +138,9 @@ int countNeighbours(struct node *current) {
   return neighbours;
 }
 
-struct node *backtrack(struct node *tip) {
+struct node *backtrack(cell maze[maze_height][maze_width], struct node *tip) {
   struct node *current = tip;
-  while (countNeighbours(current) == 0) {
+  while (countNeighbours(maze, current) == 0) {
     if (current->prev == NULL) {
       break;
     }
@@ -166,7 +160,8 @@ void freeStack(struct node *tip) {
   free(tip);
 }
 
-struct node *move(struct node *current, signed char dir[2]) {
+struct node *move(cell maze[maze_height][maze_width], struct node *current,
+                  signed char dir[2]) {
   struct node *next = (struct node *)calloc(1, sizeof(struct node));
 
   next->row = current->row + dir[0];
@@ -189,27 +184,19 @@ struct node *move(struct node *current, signed char dir[2]) {
   return next;
 }
 
-int main() {
+void genMaze(cell maze[maze_height][maze_width]) {
   srand(time(0));
-
-  init_maze();
-
   signed char dir[2];
 
   struct node *current = (struct node *)calloc(1, sizeof(struct node));
-  current->row = 0;
-  current->col = 0;
   maze[current->row][current->col].visited = true;
 
-  while (!is_done()) {
-    print_maze();
-    usleep(20000);
-    randomDir(dir, current);
+  while (!isDone(maze)) {
+    randomDir(maze, dir, current);
 
-    current = move(current, dir);
-    current = backtrack(current);
+    current = move(maze, current, dir);
+    current = backtrack(maze, current);
   }
-  print_maze();
+
   freeStack(current);
-  return 0;
 }

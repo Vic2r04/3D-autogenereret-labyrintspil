@@ -4,7 +4,7 @@ SRC_DIR := ./src
 BUILD_DIR := ./build
 
 CC := gcc
-CFLAGS := -g -Wall
+CFLAGS := -Wall
 
 SRCS := $(shell find $(SRC_DIR) -name '*.c')
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
@@ -27,4 +27,4 @@ $(BUILD_DIR)/%.c.o : %.c
 clean:
 	rm -r $(BUILD_DIR)
 
-include $(DEPS)
+-include $(DEPS)
