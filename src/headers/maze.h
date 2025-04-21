@@ -15,4 +15,5 @@ extern int maze_height;
 void initMaze(cell maze[maze_height][maze_width]);
 void genMaze(cell maze[maze_height][maze_width]);
 void printMaze(cell maze[maze_height][maze_width]);
+
 #endif

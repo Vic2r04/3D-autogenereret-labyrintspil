@@ -1,2 +1,4 @@
 *.o
 /build
+/test/testbin*
+compile_flags.txt
