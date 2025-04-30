@@ -4,8 +4,8 @@
 #include <time.h>
 #include <unistd.h>
 
-int maze_width = 20;
-int maze_height = 10;
+int maze_width = 0;
+int maze_height = 0;
 
 void initMaze(cell maze[maze_height][maze_width]) {
   for (int row = 0; row < maze_height; row++) {

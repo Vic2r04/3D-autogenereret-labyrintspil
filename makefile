@@ -16,14 +16,14 @@ DEPS := $(OBJS:.o=.d)
 INC_DIRS := $(shell find $(SRC_DIR) -type d)
 INC_FLAGS := $(addprefix -I, $(INC_DIRS))
 
-CPPFLAGS := $(INC_FLAGS) -MMD -MP
+CPPFLAGS := $(INC_FLAGS) -MMD -MP 
 
 $(BUILD_DIR)/$(TARGET_EXEC) : $(OBJS)
-	$(CC) $(OBJS) -o $@
+	$(CC) $(OBJS) -o $@ -F/Library/Frameworks -framework SDL3
 
 $(BUILD_DIR)/%.c.o : %.c
 	mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ 
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ -F/Library/Frameworks
 
 .PHONY: clean
 clean:

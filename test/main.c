@@ -4,6 +4,7 @@
 
 void test_initMaze() {
   maze_height = 20;
+  maze_width = 30;
   cell m[maze_height][maze_width];
 
   initMaze(m);
