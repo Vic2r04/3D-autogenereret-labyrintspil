@@ -30,7 +30,6 @@ bool isDone(cell maze[maze_height][maze_width]) {
 }
 
 void printMaze(cell maze[maze_height][maze_width]) {
-  printf("\n\n\n");
   printf("+");
   for (int col = 0; col < maze_width; col++) {
     printf("--+");
