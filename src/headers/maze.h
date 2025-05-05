@@ -4,10 +4,14 @@
 
 typedef struct {
   bool visited;
-  bool tip;
   bool lower;
   bool right;
 } cell;
+struct node {
+  int col;
+  int row;
+  struct node *prev;
+};
 
 extern int maze_width;
 extern int maze_height;
@@ -15,5 +19,7 @@ extern int maze_height;
 void initMaze(cell maze[maze_height][maze_width]);
 void genMaze(cell maze[maze_height][maze_width]);
 void printMaze(cell maze[maze_height][maze_width]);
+int countNeighbours(cell maze[maze_height][maze_width], struct node *current);
+bool isDone(cell maze[maze_height][maze_width]);
 
 #endif

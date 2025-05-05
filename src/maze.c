@@ -66,12 +66,6 @@ void printMaze(cell maze[maze_height][maze_width]) {
   }
 }
 
-struct node {
-  int col;
-  int row;
-  struct node *prev;
-};
-
 void randomDir(cell maze[maze_height][maze_width], signed char *dir,
                struct node *current) {
   char rn;
